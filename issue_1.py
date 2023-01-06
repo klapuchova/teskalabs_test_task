@@ -54,8 +54,9 @@ for row in data:
 
     conn = connection(postgres_login.host, postgres_login.database, postgres_login.user, postgres_login.password)
     cur = conn.cursor()
-
-    cur.execute("INSERT INTO servers (name, cpu, memory_usage, created_at, status, ip_address) VALUES (%s, %s, %s, %s, %s, %s)",
+    cur.execute("SELECT * FROM servers WHERE name=%s AND memory_usage=%s", (name, memory_usage))
+    if cur.rowcount == 0:
+        cur.execute("INSERT INTO servers (name, cpu, memory_usage, created_at, status, ip_address) VALUES (%s, %s, %s, %s, %s, %s)",
                     (name, cpu, memory_usage, created_at, status, api_address))
 
     conn.commit()

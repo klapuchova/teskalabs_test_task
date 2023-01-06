@@ -56,7 +56,7 @@ for row in data:
     cur = conn.cursor()
     cur.execute("SELECT * FROM servers WHERE name=%s AND memory_usage=%s", (name, memory_usage))
     if cur.rowcount == 0:
-        cur.execute("INSERT INTO servers (name, cpu, memory_usage, created_at, status, ip_address) VALUES (%s, %s, %s, %s, %s, %s)",
+        cur.execute("""INSERT INTO servers (name, cpu, memory_usage, created_at, status, ip_address) VALUES (%s, %s, %s, to_timestamp(%s, 'YYYY-MM-DD"T"HH24:MI:SSTZH:TZM')::timestamptz, %s, %s)""",
                     (name, cpu, memory_usage, created_at, status, api_address))
 
     conn.commit()

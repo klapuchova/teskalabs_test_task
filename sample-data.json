@@ -1494,7 +1494,7 @@
          },
          "status" : "Running",
          "cpu" : {
-            "usage" : 0
+            "usage" : 5
          },
          "disk" : {
             "root" : {

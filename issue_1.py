@@ -27,7 +27,6 @@ def load_source_data() -> dict[str, Any]:
 
 loaded_data = load_source_data()
 conn = connection(postgres_login.host, postgres_login.database, postgres_login.user, postgres_login.password)
-cur = conn.cursor()
 
 for row in loaded_data:
     name = row['name']
@@ -55,12 +54,11 @@ for row in loaded_data:
         ip_address = all_ip_address
 
 
-
-    cur.execute('SELECT EXISTS(SELECT * FROM servers WHERE name = %s)', (name,))
-    if cur.rowcount == 0:
-        cur.execute("""INSERT INTO servers (name, cpu_usage, memory_usage, created_at, status, ip_address) VALUES (%s, %s, %s, to_timestamp(%s, 'YYYY-MM-DD"T"HH24:MI:SSTZH:TZM')::timestamptz, %s, %s)""",
+    cur = conn.cursor()
+    cur.execute("""INSERT INTO servers (name, cpu_usage, memory_usage, created_at, status, ip_address) VALUES (%s, %s, %s, to_timestamp(%s, 'YYYY-MM-DD"T"HH24:MI:SSTZH:TZM')::timestamptz, %s, %s) ON CONFLICT (name) DO UPDATE SET cpu_usage = EXCLUDED.cpu_usage, memory_usage = EXCLUDED.memory_usage, created_at = EXCLUDED.created_at, status = EXCLUDED.status, ip_address = EXCLUDED.ip_address""",
                     (name, cpu_usage, memory_usage, created_at, status, ip_address))
 
     conn.commit()
-cur.close()
+    cur.close()
+
 conn.close()

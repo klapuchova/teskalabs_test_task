@@ -54,15 +54,6 @@ for row in loaded_data:
         ip_address = all_ip_address
 
 
-    # print(name)
-    # print(cpu)
-    # print(memory_usage)
-    # print(created_at)
-    # print(status)
-    # print(ip_address)
-    # print('\n')
-
-
     conn = connection(postgres_login.host, postgres_login.database, postgres_login.user, postgres_login.password)
     cur = conn.cursor()
     cur.execute('SELECT * FROM servers WHERE name=%s AND memory_usage=%s', (name, memory_usage))

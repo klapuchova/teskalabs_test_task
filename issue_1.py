@@ -56,7 +56,7 @@ for row in loaded_data:
 
 
 
-    cur.execute('SELECT * FROM servers WHERE name=%s AND memory_usage=%s', (name, memory_usage))
+    cur.execute('SELECT EXISTS(SELECT * FROM servers WHERE name = %s)', (name,))
     if cur.rowcount == 0:
         cur.execute("""INSERT INTO servers (name, cpu_usage, memory_usage, created_at, status, ip_address) VALUES (%s, %s, %s, to_timestamp(%s, 'YYYY-MM-DD"T"HH24:MI:SSTZH:TZM')::timestamptz, %s, %s)""",
                     (name, cpu_usage, memory_usage, created_at, status, ip_address))

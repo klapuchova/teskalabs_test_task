@@ -35,23 +35,23 @@ for row in loaded_data:
     if status == 'Stopped':
         cpu_usage = 0
         memory_usage = 0
-        api_address = []
+        ip_address = []
     else:
         cpu_usage = row['state']['cpu']['usage']
         memory_usage = row['state']['memory']['usage']
         created_at = row['created_at']
 
-        addresses = row['state']['network']
-        api_lines = []
-        all_api_address = []
-        for i in addresses:
-            dict_name_paths = row['state']['network'][i]['addresses']
+        network = row['state']['network']
+        ip_lines = []
+        all_ip_address = []
+        for network_name in network:
+            dict_name_paths = row['state']['network'][network_name]['addresses']
 
             for path in dict_name_paths:
-                api_lines.append(path['address'])
-        all_api_address.extend(api_lines)
+                ip_lines.append(path['address'])
+        all_ip_address.extend(ip_lines)
 
-        api_address = all_api_address
+        ip_address = all_ip_address
 
 
     # print(name)
@@ -59,7 +59,7 @@ for row in loaded_data:
     # print(memory_usage)
     # print(created_at)
     # print(status)
-    # print(api_address)
+    # print(ip_address)
     # print('\n')
 
 
@@ -68,7 +68,7 @@ for row in loaded_data:
     cur.execute('SELECT * FROM servers WHERE name=%s AND memory_usage=%s', (name, memory_usage))
     if cur.rowcount == 0:
         cur.execute("""INSERT INTO servers (name, cpu_usage, memory_usage, created_at, status, ip_address) VALUES (%s, %s, %s, to_timestamp(%s, 'YYYY-MM-DD"T"HH24:MI:SSTZH:TZM')::timestamptz, %s, %s)""",
-                    (name, cpu_usage, memory_usage, created_at, status, api_address))
+                    (name, cpu_usage, memory_usage, created_at, status, ip_address))
 
     conn.commit()
     cur.close()

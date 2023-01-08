@@ -28,6 +28,21 @@ def load_source_data() -> dict[str, Any]:
 loaded_data = load_source_data()
 conn = connection(postgres_login.host, postgres_login.database, postgres_login.user, postgres_login.password)
 
+
+def get_ip_addresses():
+    global ip_address
+    network = row['state']['network']
+    ip_lines = []
+    all_ip_address = []
+    for network_name in network:
+        dict_name_paths = row['state']['network'][network_name]['addresses']
+
+        for path in dict_name_paths:
+            ip_lines.append(path['address'])
+    all_ip_address.extend(ip_lines)
+    ip_address = all_ip_address
+
+
 for row in loaded_data:
     name = row['name']
 
@@ -41,18 +56,7 @@ for row in loaded_data:
         memory_usage = row['state']['memory']['usage']
         created_at = row['created_at']
 
-        network = row['state']['network']
-        ip_lines = []
-        all_ip_address = []
-        for network_name in network:
-            dict_name_paths = row['state']['network'][network_name]['addresses']
-
-            for path in dict_name_paths:
-                ip_lines.append(path['address'])
-        all_ip_address.extend(ip_lines)
-
-        ip_address = all_ip_address
-
+        get_ip_addresses()
 
     cur = conn.cursor()
     cur.execute("""INSERT INTO servers (name, cpu_usage, memory_usage, created_at, status, ip_address) VALUES (%s, %s, %s, to_timestamp(%s, 'YYYY-MM-DD"T"HH24:MI:SSTZH:TZM')::timestamptz, %s, %s) ON CONFLICT (name) DO UPDATE SET cpu_usage = EXCLUDED.cpu_usage, memory_usage = EXCLUDED.memory_usage, created_at = EXCLUDED.created_at, status = EXCLUDED.status, ip_address = EXCLUDED.ip_address""",

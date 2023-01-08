@@ -31,27 +31,27 @@ loaded_data = load_source_data()
 for row in loaded_data:
     name = row['name']
 
-    try:
-        cpu_usage = row['state']['cpu']['usage']
-    except TypeError:
-        continue
-
-    memory_usage = row['state']['memory']['usage']
-    created_at = row['created_at']
     status = row['status']
+    if status == 'Stopped':
+        cpu_usage = 0
+        memory_usage = 0
+        api_address = []
+    else:
+        cpu_usage = row['state']['cpu']['usage']
+        memory_usage = row['state']['memory']['usage']
+        created_at = row['created_at']
 
+        addresses = row['state']['network']
+        api_lines = []
+        all_api_address = []
+        for i in addresses:
+            dict_name_paths = row['state']['network'][i]['addresses']
 
-    addresses = row['state']['network']
-    api_lines = []
-    all_api_address = []
-    for i in addresses:
-        dict_name_paths = row['state']['network'][i]['addresses']
+            for path in dict_name_paths:
+                api_lines.append(path['address'])
+        all_api_address.extend(api_lines)
 
-        for path in dict_name_paths:
-            api_lines.append(path['address'])
-    all_api_address.extend(api_lines)
-
-    api_address = all_api_address
+        api_address = all_api_address
 
 
     # print(name)

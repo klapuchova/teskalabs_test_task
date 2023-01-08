@@ -43,6 +43,10 @@ def get_ip_addresses():
     ip_address = all_ip_address
 
 
+def save():
+    return """INSERT INTO servers (name, cpu_usage, memory_usage, created_at, status, ip_address) VALUES (%s, %s, %s, to_timestamp(%s, 'YYYY-MM-DD"T"HH24:MI:SSTZH:TZM')::timestamptz, %s, %s) ON CONFLICT (name) DO UPDATE SET cpu_usage = EXCLUDED.cpu_usage, memory_usage = EXCLUDED.memory_usage, created_at = EXCLUDED.created_at, status = EXCLUDED.status, ip_address = EXCLUDED.ip_address"""
+
+
 for row in loaded_data:
     name = row['name']
 
@@ -59,8 +63,7 @@ for row in loaded_data:
         get_ip_addresses()
 
     cur = conn.cursor()
-    cur.execute("""INSERT INTO servers (name, cpu_usage, memory_usage, created_at, status, ip_address) VALUES (%s, %s, %s, to_timestamp(%s, 'YYYY-MM-DD"T"HH24:MI:SSTZH:TZM')::timestamptz, %s, %s) ON CONFLICT (name) DO UPDATE SET cpu_usage = EXCLUDED.cpu_usage, memory_usage = EXCLUDED.memory_usage, created_at = EXCLUDED.created_at, status = EXCLUDED.status, ip_address = EXCLUDED.ip_address""",
-                    (name, cpu_usage, memory_usage, created_at, status, ip_address))
+    cur.execute(save(), (name, cpu_usage, memory_usage, created_at, status, ip_address))
 
     conn.commit()
     cur.close()

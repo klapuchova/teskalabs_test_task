@@ -5,7 +5,7 @@ import os
 from typing import Any
 
 
-def connection(host, database, user, password):
+def connection(host: str, database: str, user: str, password: str):
     conn = psycopg2.connect(
     host = host,
     database = database,

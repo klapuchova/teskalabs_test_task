@@ -1,6 +1,8 @@
 import json
 import psycopg2
 import postgres_login
+import os
+from typing import Any
 
 
 def connection(host, database, user, password):
@@ -13,11 +15,20 @@ def connection(host, database, user, password):
     return conn
 
 
-file = open('C:\\Users\\42073\\IdeaProjects\\Python_learning\\teskalabs_issue\\sample-data.json')
-data = json.load(file)
+def load_source_data() -> dict[str, Any]:
+    dirname = os.path.dirname(__file__)
+    filename = os.path.join(dirname, 'sample-data.json')
+
+    f = open(filename)
+    load = json.load(f)
+    f.close()
+    return load
 
 
-for row in data:
+loaded_data = load_source_data()
+
+
+for row in loaded_data:
     name = row["name"]
 
     try:
